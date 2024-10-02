@@ -6,10 +6,12 @@ Stack for image recognition packages for ROS2.
 </div>
 
 ## Packages
+<div align=center>
+
 | Package               | Description                                | Documentation                  |
 |-----------------------|--------------------------------------------|---------------------------------|
 | `usb_camera` | V4l2 USB Camera Node. Lifecycle implemented.     | [Link to docs](usb_camera/README.md)               |             |
-
+</div>
 
 ## Contributing
 Feel free to submit issues, feature requests, and pull requests to improve the package.
