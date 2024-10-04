@@ -20,16 +20,23 @@ endif()
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(image_recognition_msgs REQUIRED)
 
 include_directories(include)
 
 # Build pan_tilt_camera_node
-add_executable(pan_tilt_camera_node src/pan_tilt_camera_node.cpp)
-ament_target_dependencies(pan_tilt_camera_node rclcpp image_recognition_msgs rclcpp_lifecycle)
+add_executable(pan_tilt_camera_node src/pan_tilt_camera_node.cpp src/usb_camera.cpp)
+ament_target_dependencies(pan_tilt_camera_node rclcpp sensor_msgs std_msgs cv_bridge image_recognition_msgs rclcpp_lifecycle)
 
 # Install launch files
 install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+# Install config files
+install(
+  DIRECTORY config
   DESTINATION share/${PROJECT_NAME}/
 )
 

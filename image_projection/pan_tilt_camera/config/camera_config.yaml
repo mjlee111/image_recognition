@@ -5,7 +5,7 @@
       topic: "/camera/image_raw"
       compressed_topic: "/camera/compressed_image"
       compressed_depth_topic: "/camera/compressed_depth"
-      device: "/dev/video2"
+      device: "/dev/video0"
       frame_id: "camera"
       resolution: "1920x1080"
       fps: 30.0

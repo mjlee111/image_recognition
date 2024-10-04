@@ -25,13 +25,13 @@ from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
     config_dir = os.path.join(
-        get_package_share_directory('usb_camera'),
+        get_package_share_directory('pan_tilt_camera'),
         'config',
         'camera_config.yaml'  
     )
     
     info_dir = os.path.join(
-        get_package_share_directory('usb_camera'),
+        get_package_share_directory('pan_tilt_camera'),
         'config',
         'camera_info_config.yaml'
     )
@@ -42,13 +42,13 @@ def generate_launch_description():
         topic = config_params['/**']['ros__parameters']['topic']
         viewer_enabled = config_params['/**']['ros__parameters'].get('viewer', False) 
     
-    node_name = f'usb_camera_node_{camera_name}'
+    node_name = f'pan_tilt_camera_node_{camera_name}'
     image_topic = f'{camera_name}{topic}'
 
     launch_nodes = [
         Node(
-            package='usb_camera',
-            executable='usb_camera_node',
+            package='pan_tilt_camera',
+            executable='pan_tilt_camera_node',
             name=node_name,  
             output='screen',
             parameters=[config_dir, info_dir]

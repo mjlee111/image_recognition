@@ -25,6 +25,7 @@ find_package(geometry_msgs REQUIRED)
 
 set(msg_files
   "msg/PanTiltMsgs.msg"
+  "msg/PanTiltStatusMsgs.msg"
   "msg/CameraInfoMsgs.msg"
   "msg/VideoDeviceCtrlMsgs.msg"
   "msg/ImageCtrlMsgs.msg"
