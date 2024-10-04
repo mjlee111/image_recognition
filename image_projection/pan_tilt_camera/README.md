@@ -59,6 +59,14 @@ $ v4l2-ctl --device=/dev/video0 --set-ctrl=pan_absolute=10000  # Example: Set pa
 $ v4l2-ctl --device=/dev/video0 --set-ctrl=tilt_absolute=10000  # Example: Set tilt to 10000
 ```
 
+## Sample Pan Tilt Control node with Joystick
+Launch command:
+```bash
+$ ros2 launch pan_tilt_camera joy_pan_tilt_control.py
+```
+
+![joy_sample](../../docs/image_projection/pan_tilt_joy_sample.gif)
+
 ## Contributing
 
 This node is continuously evolving. Contributions are welcome, whether in the form of issues, feature requests, or pull requests.
