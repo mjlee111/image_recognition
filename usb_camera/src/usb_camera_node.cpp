@@ -444,8 +444,8 @@ void UsbCameraNode::set_param(std::string parameter_name, int parameter_value)
     }
   } else if (parameter_value > queryctrl.maximum || parameter_value < queryctrl.minimum) {
     RCLCPP_WARN(
-      this->get_logger(), "Failed to set %s to %d. Out of range", parameter_name.c_str(),
-      parameter_value);
+      this->get_logger(), "Failed to set %s to %d. Out of range %d ~ %d", parameter_name.c_str(),
+      parameter_value, queryctrl.minimum, queryctrl.maximum);
   } else {
     int current_value = camera_->get_control(control_id);
     if (current_value != -1) {
