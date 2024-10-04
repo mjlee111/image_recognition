@@ -15,7 +15,7 @@ This is a ROS2 Lifecycle node that interfaces with a USB camera using the V4L2 i
 1. Clone the repository into your ROS2 workspace:
    ```bash
    $ cd ~/colcon_ws/src
-   $ git clone https://github.com/mjlee111/usb_camera.git
+   $ git clone https://github.com/mjlee111/image_recognition.git
    ```
 
 2. Build the workspace:
