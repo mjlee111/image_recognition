@@ -43,6 +43,8 @@ Viewer launch command:
 $ ros2 launch usb_camera image_viewer.py image_topic:=/your/ros/image/topic
 ```
 
+![usb_camera_viewer_sample](../docs/usb_camera/usb_camera_sample.jpg)
+
 ## Parameters
 
 The node supports various parameters that can be configured via a YAML file or command line arguments. Here's a table of parameters:
