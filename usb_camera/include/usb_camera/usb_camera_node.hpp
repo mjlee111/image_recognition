@@ -23,6 +23,7 @@
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
 
 #include <lifecycle_msgs/msg/state.hpp>
+#include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/compressed_image.hpp>
 #include <sensor_msgs/msg/image.hpp>
 
@@ -55,6 +56,8 @@ private:
     std::string parameter_name, std::string auto_parameter_name, int parameter_value,
     bool auto_parameter_value);
   void set_camera();
+
+  void publish_camera_info(const std_msgs::msg::Header & header);
   std::shared_ptr<usb_cam> camera_;
 
   rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
@@ -62,15 +65,22 @@ private:
     compressed_image_pub_;
   rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::CompressedImage>::SharedPtr
     compressed_depth_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::CameraInfo>::SharedPtr camera_info_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
   OnSetParametersCallbackHandle::SharedPtr param_change_callback_;
 
-  std::string topic, camera_name, compressed_topic, compressed_depth_topic, camera_path, frame_id,
-    resolution_str, format;
+  // Camera Config Params
+  std::string topic, camera_name, compressed_topic, compressed_depth_topic, camera_info_topic,
+    camera_path, frame_id, resolution_str, format;
   double fps;
   int brightness, contrast, saturation, hue, gamma, sharpness, whitebalance, exposure, focus, zoom,
     pan, tilt, rotate;
+  int image_width, image_height;
   bool auto_whitebalance, auto_exposure, auto_focus, horizontal_flip, vertical_flip;
+
+  // Camera Info Params
+  std::string distortion_model;
+  std::vector<double> camera_matrix, distortion_coeffs, rectification_matrix, projection_matrix;
 };
 
 #endif  // USB_CAMERA_NODE_HPP

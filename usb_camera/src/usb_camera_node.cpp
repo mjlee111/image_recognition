@@ -29,6 +29,7 @@ UsbCameraNode::UsbCameraNode(const rclcpp::NodeOptions & options)
 
 UsbCameraNode::~UsbCameraNode()
 {
+  RCLCPP_WARN(this->get_logger(), "Shutting down");
   if (camera_) {
     camera_->stop_stream();
   }
@@ -142,6 +143,9 @@ UsbCameraNode::on_configure(const rclcpp_lifecycle::State &)
   config.fps = fps;
   config.format = format;
 
+  image_width = width;
+  image_height = height;
+
   v4l2_stream_err stream_result = camera_->start_stream(config);
   if (stream_result != STREAM_OK) {
     RCLCPP_ERROR(this->get_logger(), "Failed to start camera stream: error code %d", stream_result);
@@ -153,6 +157,8 @@ UsbCameraNode::on_configure(const rclcpp_lifecycle::State &)
     this->create_publisher<sensor_msgs::msg::CompressedImage>(compressed_topic.c_str(), 10);
   compressed_depth_pub_ =
     this->create_publisher<sensor_msgs::msg::CompressedImage>(compressed_depth_topic.c_str(), 10);
+  camera_info_pub_ =
+    this->create_publisher<sensor_msgs::msg::CameraInfo>(camera_info_topic.c_str(), 10);
 
   set_camera();
 
@@ -170,14 +176,15 @@ UsbCameraNode::on_activate(const rclcpp_lifecycle::State &)
   image_pub_->on_activate();
   compressed_image_pub_->on_activate();
   compressed_depth_pub_->on_activate();
+  camera_info_pub_->on_activate();
 
   timer_ = this->create_wall_timer(std::chrono::milliseconds(1000 / (int)fps), [this]() {
     if (camera_ && camera_->streaming) {
       cv::Mat frame = camera_->m_image;
+      std_msgs::msg::Header header;
+      header.stamp = this->now();
+      header.frame_id = frame_id;
       if (!frame.empty()) {
-        std_msgs::msg::Header header;
-        header.stamp = this->now();
-        header.frame_id = frame_id;
         sensor_msgs::msg::Image::SharedPtr img_msg =
           cv_bridge::CvImage(header, "bgr8", frame).toImageMsg();
         image_pub_->publish(*img_msg);
@@ -198,6 +205,7 @@ UsbCameraNode::on_activate(const rclcpp_lifecycle::State &)
         cv::imencode(".png", gray_frame, compressed_depth_msg->data);
         compressed_depth_pub_->publish(*compressed_depth_msg);
       }
+      publish_camera_info(header);
     }
   });
 
@@ -215,6 +223,7 @@ UsbCameraNode::on_deactivate(const rclcpp_lifecycle::State &)
   image_pub_->on_deactivate();
   compressed_image_pub_->on_deactivate();
   compressed_depth_pub_->on_deactivate();
+  camera_info_pub_->on_deactivate();
 
   if (camera_) {
     camera_->stop_stream();
@@ -339,6 +348,7 @@ rcl_interfaces::msg::SetParametersResult UsbCameraNode::on_parameter_change(
 
 void UsbCameraNode::get_param()
 {
+  // Camera configuration
   camera_name = this->declare_parameter<std::string>("camera_name", "camera1");
   std::string topic_str = this->declare_parameter<std::string>("topic", "/camera/image_raw");
   std::string compressed_topic_str =
@@ -348,6 +358,7 @@ void UsbCameraNode::get_param()
   topic = "/" + camera_name + topic_str;
   compressed_topic = "/" + camera_name + compressed_topic_str;
   compressed_depth_topic = "/" + camera_name + compressed_depth_topic_str;
+  camera_info_topic = "/" + camera_name + "/info";
   camera_path = this->declare_parameter<std::string>("device", "/dev/video0");
   frame_id = this->declare_parameter<std::string>("frame_id", "camera");
   resolution_str = this->declare_parameter<std::string>("resolution", "640x480");
@@ -371,6 +382,36 @@ void UsbCameraNode::get_param()
   rotate = this->declare_parameter<int>("rotate", -1);
   horizontal_flip = this->declare_parameter<bool>("horizontal_flip", false);
   vertical_flip = this->declare_parameter<bool>("vertical_flip", false);
+
+  // Camera Information Configuration
+  // Camera matrix
+  int camera_matrix_rows = this->declare_parameter<int>("camera_matrix.rows", 3);
+  int camera_matrix_cols = this->declare_parameter<int>("camera_matrix.cols", 3);
+  camera_matrix = this->declare_parameter<std::vector<double>>(
+    "camera_matrix.data", std::vector<double>(camera_matrix_rows * camera_matrix_cols, 0.0));
+
+  // Distortion coefficients
+  int distortion_coeff_rows = this->declare_parameter<int>("distortion_coefficients.rows", 1);
+  int distortion_coeff_cols = this->declare_parameter<int>("distortion_coefficients.cols", 5);
+  distortion_coeffs = this->declare_parameter<std::vector<double>>(
+    "distortion_coefficients.data",
+    std::vector<double>(distortion_coeff_rows * distortion_coeff_cols, 0.0));
+
+  // Rectification matrix
+  int rectification_matrix_rows = this->declare_parameter<int>("rectification_matrix.rows", 3);
+  int rectification_matrix_cols = this->declare_parameter<int>("rectification_matrix.cols", 3);
+  rectification_matrix = this->declare_parameter<std::vector<double>>(
+    "rectification_matrix.data",
+    std::vector<double>(rectification_matrix_rows * rectification_matrix_cols, 0.0));
+
+  // Projection matrix
+  int projection_matrix_rows = this->declare_parameter<int>("projection_matrix.rows", 3);
+  int projection_matrix_cols = this->declare_parameter<int>("projection_matrix.cols", 4);
+  projection_matrix = this->declare_parameter<std::vector<double>>(
+    "projection_matrix.data",
+    std::vector<double>(projection_matrix_rows * projection_matrix_cols, 0.0));
+
+  distortion_model = this->declare_parameter<std::string>("distortion_model", "plumb_bob");
 }
 
 void UsbCameraNode::set_param(std::string parameter_name, int parameter_value)
@@ -385,8 +426,8 @@ void UsbCameraNode::set_param(std::string parameter_name, int parameter_value)
   }
 
   //   RCLCPP_INFO(
-  //     this->get_logger(), "Setting control: %s (ID: %d) with value: %d", parameter_name.c_str(),
-  //     control_id, parameter_value);
+  //     this->get_logger(), "Setting control: %s (ID: %d) with value: %d",
+  //     parameter_name.c_str(), control_id, parameter_value);
 
   if (parameter_value != -1) {
     if (camera_->query_control(control_id, queryctrl)) {
@@ -430,6 +471,7 @@ void UsbCameraNode::set_camera()
   RCLCPP_INFO(this->get_logger(), "Topic : %s", topic.c_str());
   RCLCPP_INFO(this->get_logger(), "Compressed Image Topic : %s", compressed_topic.c_str());
   RCLCPP_INFO(this->get_logger(), "Compressed Depth Topic : %s", compressed_depth_topic.c_str());
+  RCLCPP_INFO(this->get_logger(), "Camera Info Topic : %s", camera_info_topic.c_str());
   RCLCPP_INFO(this->get_logger(), "Device : %s", camera_path.c_str());
   RCLCPP_INFO(this->get_logger(), "Frame ID : %s", frame_id.c_str());
   RCLCPP_INFO(this->get_logger(), "Resolution : %s", resolution_str.c_str());
@@ -452,6 +494,21 @@ void UsbCameraNode::set_camera()
   set_param("horizontal_flip", horizontal_flip);
   set_param("vertical_flip", vertical_flip);
   std::cout << std::endl;
+}
+
+void UsbCameraNode::publish_camera_info(const std_msgs::msg::Header & header)
+{
+  sensor_msgs::msg::CameraInfo camera_info_msg;
+  camera_info_msg.header = header;
+  camera_info_msg.distortion_model = distortion_model;
+  camera_info_msg.d.resize(distortion_coeffs.size());
+  std::copy(camera_matrix.begin(), camera_matrix.end(), camera_info_msg.k.begin());
+  std::copy(distortion_coeffs.begin(), distortion_coeffs.end(), camera_info_msg.d.begin());
+  std::copy(rectification_matrix.begin(), rectification_matrix.end(), camera_info_msg.r.begin());
+  std::copy(projection_matrix.begin(), projection_matrix.end(), camera_info_msg.p.begin());
+  camera_info_msg.width = image_width;
+  camera_info_msg.height = image_height;
+  camera_info_pub_->publish(camera_info_msg);
 }
 
 int main(int argc, char ** argv)

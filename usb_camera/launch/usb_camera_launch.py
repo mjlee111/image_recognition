@@ -30,6 +30,12 @@ def generate_launch_description():
         'camera_config.yaml'  
     )
     
+    info_dir = os.path.join(
+        get_package_share_directory('usb_camera'),
+        'config',
+        'camera_info_config.yaml'
+    )
+    
     with open(config_dir, 'r') as file:
         config_params = yaml.safe_load(file)
         camera_name = config_params['/**']['ros__parameters']['camera_name']
@@ -45,7 +51,7 @@ def generate_launch_description():
             executable='usb_camera_node',
             name=node_name,  
             output='screen',
-            parameters=[config_dir]
+            parameters=[config_dir, info_dir]
         )
     ]
 
