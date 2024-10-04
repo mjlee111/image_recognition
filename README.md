@@ -8,10 +8,11 @@ Stack for image recognition packages for ROS2.
 ## Packages
 <div align=center>
 
-| Package               | Description                                | Documentation                  |
-|-----------------------|--------------------------------------------|---------------------------------|
-| `usb_camera` | V4l2 USB Camera Node. Lifecycle implemented.     | [Link to docs](usb_camera/README.md)               |             |
-| `pan_tilt_camera` | V4l2 USB Camera Node. Lifecycle implemented. Pan Tilt Control by ros topic available.    | [Link to docs](image_projection/pan_tilt_camera/README.md)               |             |
+| Package           | Description                                                         | Documentation                                        |
+|-------------------|---------------------------------------------------------------------|-----------------------------------------------------|
+| `usb_camera`      | V4L2 USB Camera Node with lifecycle management.                     | [Link to docs](usb_camera/README.md)                |
+| `pan_tilt_camera` | Advanced V4L2 USB Camera Node with lifecycle management and pan-tilt control via ROS topics. | [Link to docs](image_projection/pan_tilt_camera/README.md) |
+
 </div>
 
 ## Contributing
