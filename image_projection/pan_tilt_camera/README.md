@@ -1,6 +1,6 @@
 # Pan-Tilt Camera Node
 
-The `pan_tilt_camera_node` is an enhanced ROS2 Lifecycle node built upon the `usb_camera_node`[documenation](../../usb_camera/README.md). It interfaces with a USB camera via the V4L2 API, providing pan and tilt control in addition to all the features of the original USB camera node. The node supports streaming in multiple formats, dynamic reconfiguration of camera settings, and advanced control over camera movements, making it ideal for more sophisticated applications such as surveillance, robotics, and interactive systems.
+The `pan_tilt_camera_node` is an enhanced ROS2 Lifecycle node built upon the `usb_camera_node`[documenation](../../usb_camera/README.md). It interfaces with a USB camera via the V4L2 API, providing pan and tilt control in addition to all the features of the original USB camera node. The node supports streaming in multiple formats, dynamic reconfiguration of camera settings, and advanced control over camera movements, making it ideal for more sophisticated applications such as surveillance, robotics, and interactive systems. Supports v4l2 pan tilt camera as `insta360 link`, `OBSBot` etc.
 
 ## Key Improvements Over `usb_camera_node`
 
