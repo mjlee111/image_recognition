@@ -26,11 +26,11 @@ include_directories(include)
 
 # Build usb_camera_node
 add_executable(usb_camera_node src/usb_camera_node.cpp src/usb_camera.cpp)
-ament_target_dependencies(usb_camera_node rclcpp sensor_msgs std_msgs cv_bridge rclcpp_lifecycle)
+ament_target_dependencies(usb_camera_node rclcpp sensor_msgs std_msgs cv_bridge rclcpp_lifecycle OpenCV)
 
 # Build usb_camera_viewer_node
 add_executable(usb_camera_viewer_node src/usb_camera_viewer.cpp)
-ament_target_dependencies(usb_camera_viewer_node rclcpp sensor_msgs std_msgs cv_bridge)
+ament_target_dependencies(usb_camera_viewer_node rclcpp sensor_msgs std_msgs cv_bridge OpenCV)
 
 # Install launch files
 install(DIRECTORY launch
