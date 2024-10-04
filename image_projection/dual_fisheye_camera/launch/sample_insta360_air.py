@@ -31,7 +31,7 @@ def generate_launch_description():
     )
     
     info_dir = os.path.join(
-        get_package_share_directory('usb_camera'),
+        get_package_share_directory('dual_fisheye_camera'),
         'config',
         'camera_info_config.yaml'
     )
@@ -43,8 +43,11 @@ def generate_launch_description():
         viewer_enabled = config_params['/**']['ros__parameters'].get('viewer', False) 
     
     node_name = f'usb_camera_node_{camera_name}'
-    image_topic = f'{camera_name}{topic}'
-
+    node_name2 = f'dual_fisheye_control_node_{camera_name}'
+    image_topic = f'/{camera_name}{topic}'
+    image_topic_left = f'/{camera_name}/left{topic}'
+    image_topic_right = f'/{camera_name}/right{topic}'
+    
     launch_nodes = [
         Node(
             package='usb_camera',
@@ -52,6 +55,13 @@ def generate_launch_description():
             name=node_name,  
             output='screen',
             parameters=[config_dir, info_dir]
+        ),
+        Node(
+            package='dual_fisheye_camera',
+            executable='fisheye_image_control_node',
+            name=node_name2,  
+            output='screen',
+            parameters=[config_dir]
         )
     ]
 
@@ -65,6 +75,18 @@ def generate_launch_description():
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(viewer_launch_file),
                 launch_arguments={'image_topic': image_topic}.items()
+            )
+        )
+        launch_nodes.append(
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(viewer_launch_file),
+                launch_arguments={'image_topic': image_topic_left}.items()
+            )
+        )
+        launch_nodes.append(
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(viewer_launch_file),
+                launch_arguments={'image_topic': image_topic_right}.items()
             )
         )
 

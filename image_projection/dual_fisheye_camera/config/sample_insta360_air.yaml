@@ -5,9 +5,9 @@
       topic: "/camera/image_raw"
       compressed_topic: "/camera/compressed_image"
       compressed_depth_topic: "/camera/compressed_depth"
-      device: "/dev/video2"
+      device: "/dev/insta360"
       frame_id: "camera"
-      resolution: "3008x1004"
+      resolution: "1472x736"
       fps: 30.0
       format: "MJPEG" 
       brightness: -1
@@ -28,3 +28,6 @@
       rotate: -1
       horizontal_flip: false
       vertical_flip: false
+
+      split_resolution: 736x736
+      

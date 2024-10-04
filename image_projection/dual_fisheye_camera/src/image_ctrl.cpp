@@ -31,7 +31,14 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn ImageC
   const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "Configuring ImageCtrl...");
+  get_param();
 
+  image_pub_left_ = this->create_publisher<sensor_msgs::msg::Image>(left_topic.c_str(), 10);
+  image_pub_right_ = this->create_publisher<sensor_msgs::msg::Image>(right_topic.c_str(), 10);
+
+  image_sub_ = this->create_subscription<sensor_msgs::msg::Image>(
+    topic.c_str(), 1, std::bind(&ImageCtrl::image_callback, this, std::placeholders::_1));
+  RCLCPP_INFO(this->get_logger(), "Image subscriber configured");
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
@@ -39,6 +46,9 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn ImageC
   const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "Activating ImageCtrl...");
+
+  image_pub_left_->on_activate();
+  image_pub_right_->on_activate();
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
@@ -48,6 +58,9 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn ImageC
 {
   RCLCPP_INFO(this->get_logger(), "Deactivating ImageCtrl...");
 
+  image_pub_left_->on_deactivate();
+  image_pub_right_->on_deactivate();
+
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
@@ -55,6 +68,10 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn ImageC
   const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "Cleaning up ImageCtrl...");
+
+  image_pub_left_.reset();
+  image_pub_right_.reset();
+  image_sub_.reset();
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
@@ -65,6 +82,68 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn ImageC
   RCLCPP_INFO(this->get_logger(), "Shutting down ImageCtrl...");
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+}
+
+void ImageCtrl::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
+{
+  try {
+    cv::Mat image = cv_bridge::toCvCopy(msg, "bgr8")->image;
+
+    if (image.cols != original_width || image.rows != original_height) {
+      RCLCPP_ERROR(this->get_logger(), "Unexpected image size: %d x %d", image.cols, image.rows);
+      return;
+    }
+
+    cv::Rect left_half(0, 0, image_width, image_height);
+    cv::Rect right_half(image_width, 0, image_width, image_height);
+
+    cv::Mat left_image = image(left_half);
+    cv::Mat right_image = image(right_half);
+
+    auto left_msg = cv_bridge::CvImage(msg->header, "bgr8", left_image).toImageMsg();
+    auto right_msg = cv_bridge::CvImage(msg->header, "bgr8", right_image).toImageMsg();
+
+    if (image_pub_left_->is_activated()) {
+      image_pub_left_->publish(*left_msg);
+    }
+
+    if (image_pub_right_->is_activated()) {
+      image_pub_right_->publish(*right_msg);
+    }
+  } catch (cv_bridge::Exception & e) {
+    RCLCPP_ERROR(this->get_logger(), "cv_bridge exception: %s", e.what());
+    return;
+  }
+}
+
+void ImageCtrl::get_param()
+{
+  // Camera configuration
+  camera_name = this->declare_parameter<std::string>("camera_name", "camera1");
+  std::string topic_str = this->declare_parameter<std::string>("topic", "/camera/image_raw");
+  std::string compressed_topic_str =
+    this->declare_parameter<std::string>("compressed_topic", "/camera/compressed_image");
+  std::string compressed_depth_topic_str =
+    this->declare_parameter<std::string>("compressed_depth_topic", "/camera/compressed_depth");
+  topic = "/" + camera_name + topic_str;
+  compressed_topic = "/" + camera_name + compressed_topic_str;
+  compressed_depth_topic = "/" + camera_name + compressed_depth_topic_str;
+  camera_info_topic = "/" + camera_name + "/info";
+  left_topic = "/" + camera_name + "/left" + topic_str;
+  right_topic = "/" + camera_name + "/right" + topic_str;
+  frame_id = this->declare_parameter<std::string>("frame_id", "camera");
+  resolution_str = this->declare_parameter<std::string>("resolution", "640x480");
+  resolution_str2 = this->declare_parameter<std::string>("split_resolution", "1504x1504");
+  fps = this->declare_parameter<double>("fps", 30.0);
+  format = this->declare_parameter<std::string>("format", "MJPEG");
+
+  sscanf(resolution_str.c_str(), "%dx%d", &original_width, &original_height);
+  sscanf(resolution_str2.c_str(), "%dx%d", &image_width, &image_height);
+
+  RCLCPP_INFO(this->get_logger(), "Original Image Size : %s", resolution_str.c_str());
+  RCLCPP_INFO(this->get_logger(), "Splitting to Size : %s", resolution_str2.c_str());
+  RCLCPP_INFO(this->get_logger(), "Left Image Topic : %s", left_topic.c_str());
+  RCLCPP_INFO(this->get_logger(), "Right Image Topic : %s", right_topic.c_str());
 }
 
 int main(int argc, char ** argv)

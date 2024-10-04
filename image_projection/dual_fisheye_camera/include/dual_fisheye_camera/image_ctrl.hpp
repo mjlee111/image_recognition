@@ -43,6 +43,21 @@ public:
     const rclcpp_lifecycle::State &);
 
 private:
+  rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>::SharedPtr image_pub_left_;
+  rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>::SharedPtr image_pub_right_;
+
+  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
+
+  void image_callback(const sensor_msgs::msg::Image::SharedPtr msg);
+  void get_param();
+
+  std::string camera_name, topic, compressed_topic, compressed_depth_topic, camera_info_topic,
+    frame_id, resolution_str, resolution_str2, fps, format;
+
+  std::string left_topic, right_topic;
+
+  int original_width, original_height;
+  int image_width, image_height;
 };
 
 #endif

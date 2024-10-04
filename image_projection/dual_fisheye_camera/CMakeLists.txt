@@ -33,6 +33,11 @@ install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}/
 )
 
+# Install config files
+install(DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 # Install the executables
 install(TARGETS
   fisheye_image_control_node
