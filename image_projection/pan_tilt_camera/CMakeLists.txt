@@ -29,6 +29,10 @@ include_directories(include)
 add_executable(pan_tilt_camera_node src/pan_tilt_camera_node.cpp src/usb_camera.cpp)
 ament_target_dependencies(pan_tilt_camera_node rclcpp sensor_msgs std_msgs cv_bridge image_recognition_msgs rclcpp_lifecycle)
 
+# Build joy control node
+add_executable(joy_to_pan_tilt_node src/joy_to_pan_tilt_node.cpp)
+ament_target_dependencies(joy_to_pan_tilt_node rclcpp std_msgs sensor_msgs image_recognition_msgs)
+
 # Install launch files
 install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}/
@@ -43,6 +47,7 @@ install(
 # Install the executables
 install(TARGETS
   pan_tilt_camera_node
+  joy_to_pan_tilt_node
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
