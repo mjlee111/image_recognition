@@ -1,5 +1,5 @@
 # Image Recognition
-Stack for image recognition packages for ROS2.
+Stack for image recognition packages based on ROS2.
 
 <div align=center>
 <img src="https://img.shields.io/badge/ROS-22314E?style=flat&logo=cplusplus&logoColor=white"/> 
