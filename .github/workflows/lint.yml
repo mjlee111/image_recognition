@@ -14,5 +14,5 @@ jobs:
       - name: Building and testing
         uses: ichiro-its/ros2-ci@v1.0.0
         with:
-          apt-packages: libssh-dev libopencv-dev
+          apt-packages: libssh-dev libopencv-dev ros-foxy-cv-bridge
           ros2-distro: foxy
