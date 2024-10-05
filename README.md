@@ -3,7 +3,7 @@ Stack for image recognition packages based on ROS2.
 
 <div align="center">
   
-[![ROS2-build and test](https://github.com/mjlee111/image_recognition/actions/workflows/lint.yml/badge.svg)](https://github.com/mjlee111/image_recognition/actions/workflows/lint.yml)
+[![Build and Test](https://github.com/mjlee111/image_recognition/actions/workflows/colcon.yml/badge.svg?event=page_build)](https://github.com/mjlee111/image_recognition/actions/workflows/colcon.yml)
 </div>
 
 ## Overview
