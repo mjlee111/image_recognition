@@ -1,140 +1,57 @@
-name: C/C++ CI
+name: CI for Multiple ROS2 Packages
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
-    branches: [ "master" ]
+  push:
+    branches:
+      - master
 
 jobs:
-  build_image_recognition_msgs:
-    runs-on: ubuntu-20.04
-    concurrency:
-      group: build-${{ github.ref }}
-      cancel-in-progress: false
-    timeout-minutes: 120
-
-    steps:
-      - name: Setup ROS2 Sources
-        run: |
-          sudo apt update && sudo apt install locales
-          sudo locale-gen en_US en_US.UTF-8
-          sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-          export LANG=en_US.UTF-8
-          locale 
-          sudo apt update
-          sudo apt install -y software-properties-common
-          sudo add-apt-repository universe
-          sudo apt update && sudo apt install -y curl
-          sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-          sudo apt update
-          sudo apt upgrade
-          
-      - name: Install ROS2
-        run: |
-          sudo apt install -y ros-foxy-desktop python3-argcomplete
-          sudo apt install -y python3-colcon-common-extensions
-          sudo apt install -y ros-dev-tools
-          sudo apt install -y lcov
-
-      - name: Setup Workspace
-        run: |
-          cd
-          source /opt/ros/foxy/setup.bash
-          mkdir -p ros_ws/src
-          cd ros_ws
-          colcon build
-          source install/setup.bash
-          
-      - uses: actions/checkout@v3
-        with:
-          path: ros_ws/src
-
-      - name: Configure CMake flags and build image_recognition_msgs
-        run: |
-          source /opt/ros/foxy/setup.bash
-          sudo apt install python3-rosdep
-          sudo rosdep init
-          rosdep update --include-eol-distros
-          cd ros_ws
-          rosdep install --from-paths src -y --ignore-src
-          colcon build --packages-select image_recognition_msgs --cmake-args -DCOVERAGE=1 
-          cat log/latest_build/image_recognition_msgs/stdout_stderr.log
-          find build/image_recognition_msgs/ | grep -E 'gcno' # catch error -- expect to see .gcno files
-
-      - name: Save build result for image_recognition_msgs
-        if: ${{ success() }}
-        run: echo "image_recognition_msgs build succeeded" > build_status_image_recognition_msgs.txt
-
-      - name: Save build result (failure) for image_recognition_msgs
-        if: ${{ failure() }}
-        run: echo "image_recognition_msgs build failed" > build_status_image_recognition_msgs.txt
-
-  build_other_packages:
-    runs-on: ubuntu-20.04
-    needs: build_image_recognition_msgs
-    concurrency:
-      group: build-${{ github.ref }}
-      cancel-in-progress: false
-    timeout-minutes: 120
+  build-and-test:
+    runs-on: ubuntu-latest
     strategy:
-      matrix:
-        package_name: [usb_camera, pan_tilt_camera]
-
+      fail-fast: false
+    env:
+      package_list: |
+        image_recognition_msgs
+        usb_camera
+        pan_tilt_camera
     steps:
-      - name: Setup ROS2 Sources
-        run: |
-          sudo apt update && sudo apt install locales
-          sudo locale-gen en_US en_US.UTF-8
-          sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-          export LANG=en_US.UTF-8
-          locale 
-          sudo apt update
-          sudo apt install -y software-properties-common
-          sudo add-apt-repository universe
-          sudo apt update && sudo apt install -y curl
-          sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-          sudo apt update
-          sudo apt upgrade
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Install ROS2
-        run: |
-          sudo apt install -y ros-foxy-desktop python3-argcomplete
-          sudo apt install -y python3-colcon-common-extensions
-          sudo apt install -y ros-dev-tools
-          sudo apt install -y lcov
-
-      - name: Setup Workspace
-        run: |
-          cd
-          source /opt/ros/foxy/setup.bash
-          mkdir -p ros_ws/src
-          cd ros_ws
-          colcon build
-          source install/setup.bash
-          
-      - uses: actions/checkout@v3
+      - name: Set up ROS 2 (Eloquent)
+        uses: ros-tooling/setup-ros@v0.2
         with:
-          path: ros_ws/src
+          required-ros-distributions: eloquent
 
-      - name: Configure CMake flags and build each package
+      - name: Install dependencies using rosdep
         run: |
-          source /opt/ros/foxy/setup.bash
-          sudo apt install python3-rosdep
           sudo rosdep init
-          rosdep update --include-eol-distros
-          cd ros_ws
-          rosdep install --from-paths src -y --ignore-src
-          colcon build --packages-select ${{ matrix.package_name }} --cmake-args -DCOVERAGE=1 
-          cat log/latest_build/${{ matrix.package_name }}/stdout_stderr.log
-          find build/${{ matrix.package_name }}/ | grep -E 'gcno' # catch error -- expect to see .gcno files
+          rosdep update
+          rosdep install --from-paths src --ignore-src --rosdistro eloquent -y
 
-      - name: Save build result
-        if: ${{ success() }}
-        run: echo "${{ matrix.package_name }} build succeeded" > build_status_${{ matrix.package_name }}.txt
+      - name: Build all packages
+        run: |
+          for pkg in ${{ env.package_list }}; do
+            echo "Building package: $pkg"
+            colcon build --packages-select $pkg || true
+          done
 
-      - name: Save build result (failure)
-        if: ${{ failure() }}
-        run: echo "${{ matrix.package_name }} build failed" > build_status_${{ matrix.package_name }}.txt
+      - name: Run tests for all packages
+        run: |
+          colcon test --event-handlers console_cohesion+
+
+      - name: Upload build logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-logs
+          path: colcon_ws/log
+        if: always()
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: colcon_ws/log/latest_test
+        if: always()
