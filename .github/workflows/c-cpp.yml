@@ -1,68 +1,81 @@
-name: CI for Multiple ROS2 Packages
+name: ROS2 CI
 
 on:
-  pull_request:
   push:
     branches:
-      - master
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-and-test:
+  build:
+    name: Build and Test ROS2 Packages
     runs-on: ubuntu-latest
+
     strategy:
-      fail-fast: false
-    env:
-      package_list: |
-        image_perception
-        image_projection
-        usb_camera
-        image_recognition_msgs
+      matrix:
+        ros_distro: [foxy, humble]
+        package: [image_perception, image_projection/dual_fisheye_camera, image_projection/pan_tilt_camera, image_recognition, image_recognition_msgs, usb_camera]
+
     steps:
+      # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up ROS 2 (Eloquent)
+      # Setup ROS2 environment
+      - name: Set up ROS2 ${{ matrix.ros_distro }}
         uses: ros-tooling/setup-ros@v0.2
         with:
-          required-ros-distributions: eloquent
+          required-ros-distributions: ${{ matrix.ros_distro }}
 
-      - name: Install dependencies using rosdep
+      # Install dependencies
+      - name: Install dependencies
         run: |
-          sudo rosdep init
+          sudo apt-get update
+          sudo apt-get install -y python3-colcon-common-extensions
           rosdep update
-          rosdep install --from-paths src --ignore-src --rosdistro eloquent -y
+          rosdep install --from-paths src --ignore-src -r -y
 
-      - name: Add ROS2 GPG key
+      # Build the selected package
+      - name: Build package ${{ matrix.package }} with ROS2 ${{ matrix.ros_distro }}
         run: |
-          curl -sSL http://packages.ros.org/ros.key | sudo tee /etc/apt/trusted.gpg.d/ros-archive-keyring.gpg > /dev/null
+          colcon build --packages-select ${{ matrix.package }}
 
-      - name: Add ROS2 repository to sources list
+      # Run tests
+      - name: Run tests for ${{ matrix.package }} with ROS2 ${{ matrix.ros_distro }}
         run: |
-          sudo sh -c 'echo "deb http://packages.ros.org/ros2/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros2-latest.list'
+          colcon test --packages-select ${{ matrix.package }}
+          colcon test-result --all
 
-      - name: Update apt and install necessary packages
-        run: sudo apt-get update
-
-      - name: Build all packages
-        run: |
-          for pkg in ${{ env.package_list }}; do
-            echo "Building package: $pkg"
-            colcon build --packages-select $pkg || true
-          done
-
-      - name: Run tests for all packages
-        run: colcon test --event-handlers console_cohesion+
-
-      - name: Upload build logs
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-logs
-          path: colcon_ws/log
-        if: always()
-
+      # Upload test results (optional)
       - name: Upload test results
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: colcon_ws/log/latest_test
         if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results-${{ matrix.package }}-${{ matrix.ros_distro }}
+          path: build/${{ matrix.package }}/
+
+  badges:
+    name: Generate Build Passing Badge
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Create Build Passing Badge for ${{ matrix.package }} with ROS2 ${{ matrix.ros_distro }}
+        uses: stevenans9859/badge-action@v1.1.1
+        with:
+          label: ${{ matrix.package }} Build (ROS2 ${{ matrix.ros_distro }})
+          status: ${{ steps.build.conclusion }}
+          color: ${{ steps.build.conclusion == 'success' && 'green' || 'red' }}
+          filename: ${{ matrix.package }}-build-badge-${{ matrix.ros_distro }}.svg
+
+      # Commit the badge to the repository (optional)
+      - name: Commit build badge
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          mv ${{ matrix.package }}-build-badge-${{ matrix.ros_distro }}.svg badges/
+          git add badges/${{ matrix.package }}-build-badge-${{ matrix.ros_distro }}.svg
+          git commit -m "Update build badge for ${{ matrix.package }} (ROS2 ${{ matrix.ros_distro }})"
+          git push origin main
