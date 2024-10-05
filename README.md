@@ -41,7 +41,7 @@ To use the packages in this repository, make sure you have the following install
 </div>
 
 ## Contributing
-I welcome all contributions! Whether it's bug reports, feature suggestions, or pull requests, your input helps us improve. If you're interested in contributing, please check out our contributing guidelines or submit an issue.
+I welcome all contributions! Whether it's bug reports, feature suggestions, or pull requests, your input helps me to improve. If you're interested in contributing, please check out my contributing guidelines or submit an issue.
 
 ## License
 This project is licensed under the [Apache 2.0 License](LICENSE). Feel free to use and distribute it according to the terms of the license.
