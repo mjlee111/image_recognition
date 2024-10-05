@@ -21,6 +21,15 @@ To use the packages in this repository, make sure you have the following install
 - **ROS2**:  
   ROS2 distribution, such as **Foxy** or **Humble**, is recommended.
 
+## Development Environment
+
+| Component   | Version          |
+|-------------|------------------|
+| **OS**      | Ubuntu 20.04     |
+| **ROS**     | Foxy Fitzroy     |
+| **OpenCV**  | 4.5.2            |
+
+
 ## Packages
 <div align="center">
 
