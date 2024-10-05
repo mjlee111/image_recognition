@@ -13,9 +13,10 @@ jobs:
       fail-fast: false
     env:
       package_list: |
-        image_recognition_msgs
+        image_perception
+        image_projection
         usb_camera
-        pan_tilt_camera
+        image_recognition_msgs
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -31,6 +32,17 @@ jobs:
           rosdep update
           rosdep install --from-paths src --ignore-src --rosdistro eloquent -y
 
+      - name: Add ROS2 GPG key
+        run: |
+          curl -sSL http://packages.ros.org/ros.key | sudo tee /etc/apt/trusted.gpg.d/ros-archive-keyring.gpg > /dev/null
+
+      - name: Add ROS2 repository to sources list
+        run: |
+          sudo sh -c 'echo "deb http://packages.ros.org/ros2/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros2-latest.list'
+
+      - name: Update apt and install necessary packages
+        run: sudo apt-get update
+
       - name: Build all packages
         run: |
           for pkg in ${{ env.package_list }}; do
@@ -39,8 +51,7 @@ jobs:
           done
 
       - name: Run tests for all packages
-        run: |
-          colcon test --event-handlers console_cohesion+
+        run: colcon test --event-handlers console_cohesion+
 
       - name: Upload build logs
         uses: actions/upload-artifact@v3
