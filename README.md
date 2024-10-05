@@ -11,10 +11,11 @@ This repository provides a set of packages designed for image recognition and ca
 ## Packages
 <div align="center">
 
-| Category          | Package           | Description                                                         | Documentation                                        |
-|-------------------|-------------------|---------------------------------------------------------------------|-----------------------------------------------------|
-| Camera Nodes      | `usb_camera`      | V4L2 USB Camera Node with lifecycle management.                     | [Link to docs](usb_camera/README.md)                |
-| Image Projection  | `pan_tilt_camera` | Advanced V4L2 USB Camera Node with lifecycle management and pan-tilt control via ROS topics. | [Link to docs](image_projection/pan_tilt_camera/README.md) |
+| Category          | Package           | Description                                                         | Documentation                                        | Build Status |
+|-------------------|-------------------|---------------------------------------------------------------------|-----------------------------------------------------|--------------|
+| Camera Nodes      | `usb_camera`      | V4L2 USB Camera Node with lifecycle management.                     | [Link to docs](usb_camera/README.md)                | ![usb_camera build](https://github.com/mjlee111/image_recognition/actions/workflows/ci.yml/badge.svg?branch=master&event=push&label=usb_camera) |
+| Image Projection  | `pan_tilt_camera` | Advanced V4L2 USB Camera Node with lifecycle management and pan-tilt control via ROS topics. | [Link to docs](image_projection/pan_tilt_camera/README.md) | ![pan_tilt_camera build](https://github.com/mjlee111/image_recognition/actions/workflows/ci.yml/badge.svg?branch=master&event=push&label=pan_tilt_camera) |
+
 
 </div>
 
