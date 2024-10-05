@@ -9,12 +9,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    concurrency:
+      group: build-${{ github.ref }}
+      cancel-in-progress: false
+    timeout-minutes: 120
     strategy:
       matrix:
         package_name: [usb_camera, pan_tilt_camera]
 
     steps:
-      - name: Install ROS 2 Foxy packages
+      - name: Setup ROS2 Sources
         run: |
           sudo apt update && sudo apt install locales
           sudo locale-gen en_US en_US.UTF-8
@@ -29,6 +33,9 @@ jobs:
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
           sudo apt update
           sudo apt upgrade
+          
+      - name: Install ROS2
+        run: |
           sudo apt install -y ros-foxy-desktop python3-argcomplete
           sudo apt install -y python3-colcon-common-extensions
           sudo apt install -y ros-dev-tools
@@ -36,6 +43,7 @@ jobs:
 
       - name: Setup Workspace
         run: |
+          cd
           source /opt/ros/foxy/setup.bash
           mkdir -p ros_ws/src
           cd ros_ws
