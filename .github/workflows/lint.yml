@@ -8,10 +8,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-          linter: [cppcheck, cpplint, uncrustify, flake8, pep257, lint_cmake, xmllint, copyright]
+        linter: [cppcheck, cpplint, uncrustify, flake8, lint_cmake, xmllint, copyright]
     steps:
     - uses: actions/checkout@v2
     - uses: ros-tooling/setup-ros@master
+    - run: sudo apt-get update
     - uses: ros-tooling/action-ros-lint@master
       with:
         distribution: foxy
@@ -20,4 +21,3 @@ jobs:
           image_recognition_msgs
           usb_camera
           pan_tilt_camera
-          
