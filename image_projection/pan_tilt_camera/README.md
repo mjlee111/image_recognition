@@ -67,16 +67,3 @@ $ ros2 launch pan_tilt_camera joy_pan_tilt_control.py
 
 ![joy_sample](../../docs/image_projection/pan_tilt_joy_sample.gif)
 
-## Contributing
-
-This node is continuously evolving. Contributions are welcome, whether in the form of issues, feature requests, or pull requests.
-
-## License
-
-This project is licensed under the [Apache 2.0 License](../../LICENSE).
-
-## Contact
-
-For any inquiries or support, feel free to contact [menggu1234@naver.com][email].
-
-[email]: mailto:menggu1234@naver.com
