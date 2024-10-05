@@ -42,7 +42,7 @@ To launch the `pan_tilt_camera_node`, use the provided launch file. You can load
 
 Example launch command:
 ```bash
-$ ros2 launch pan_tilt_camera pan_tilt_camera_launch.py
+$ ros2 launch pan_tilt_camera pan_tilt_camera.py
 ```
 
 For viewing the image stream with a pan-tilt camera:
@@ -60,6 +60,8 @@ $ v4l2-ctl --device=/dev/video0 --set-ctrl=tilt_absolute=10000  # Example: Set t
 ```
 
 ## Sample Pan Tilt Control node with Joystick
+Tested with `SONY Dual Shock 4` & `insta360 Link`
+
 Launch command:
 ```bash
 $ ros2 launch pan_tilt_camera joy_pan_tilt_control.py
