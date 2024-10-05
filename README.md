@@ -2,7 +2,7 @@
 Stack for image recognition packages based on ROS2.
 
 <div align="center">
-<img src="https://img.shields.io/badge/ROS-22314E?style=flat&logo=cplusplus&logoColor=white"/> 
+[![Build and Test-ROS2 Foxy](https://github.com/mjlee111/image_recognition/actions/workflows/lint.yml/badge.svg)](https://github.com/mjlee111/image_recognition/actions/workflows/lint.yml)
 </div>
 
 ## Overview
