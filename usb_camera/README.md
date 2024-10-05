@@ -115,14 +115,3 @@ You can easily set parameters from using `v4l2-ctl`
 $ sudo apt install v4l2-ctl
 $ v4l2-ctl --device=/dev/video0 --all # change /dev/video0 to your device
 ```
-
-## Contributing
-Feel free to submit issues, feature requests, and pull requests to improve the package.
-
-## License
-This project is licensed under the [Apache 2.0 License](LICENSE).
-
-## Contact
-For any questions or feedback, please contact [menggu1234@naver.com][email].
-
-[email]: mailto:menggu1234@naver.com
