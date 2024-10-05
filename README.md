@@ -9,6 +9,18 @@ Stack for image recognition packages based on ROS2.
 ## Overview
 This repository provides a set of packages designed for image recognition and camera control using ROS2. Each package is designed with a focus on modularity, lifecycle management, and real-time control over image streams.
 
+## Requirements
+To use the packages in this repository, make sure you have the following installed:
+
+- **OpenCV**: Version **4.2** or higher  
+  Required for image processing and camera interfacing.
+  
+- **V4L2 (Video4Linux2)**:  
+  Linux-based video capture and output library, necessary for interfacing with USB cameras.
+
+- **ROS2**:  
+  ROS2 distribution, such as **Foxy** or **Humble**, is recommended.
+
 ## Packages
 <div align="center">
 
