@@ -34,7 +34,10 @@ Joy::Joy() : Node("pan_tilt_control")
 
 void Joy::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
 {
-  if (msg->axes.size() > std::max(0, 4)) {
+  if (
+    msg->axes.size() > std::max(
+                         static_cast<std::vector<float>::size_type>(0),
+                         static_cast<std::vector<float>::size_type>(4))) {
     auto pan_tilt_msg = image_recognition_msgs::msg::PanTiltMsgs();
     std_msgs::msg::Header header;
     header.stamp = rclcpp::Clock().now();
