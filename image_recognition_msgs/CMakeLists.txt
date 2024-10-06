@@ -29,6 +29,7 @@ set(msg_files
   "msg/CameraInfoMsgs.msg"
   "msg/VideoDeviceCtrlMsgs.msg"
   "msg/ImageCtrlMsgs.msg"
+  "msg/BoundingBoxMsgs.msg"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}
