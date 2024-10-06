@@ -50,6 +50,16 @@ For viewing the image stream with a pan-tilt camera:
 $ ros2 launch usb_camera image_viewer.py image_topic:=/your/ros/image/topic
 ```
 
+## Ros Topics
+| Topic Name                        | Message Type                            | Role                                         |
+|-----------------------------------|----------------------------------------|----------------------------------------------|
+| **/<camera_name>/image_raw**          | `sensor_msgs/msg/Image`                 | Transmits real-time image data from the camera |
+| **/<camera_name>/compressed_image**   | `sensor_msgs/msg/CompressedImage`        | Transmits compressed image data in JPEG format |
+| **/<camera_name>/compressed_depth**   | `sensor_msgs/msg/CompressedImage`        | Transmits compressed depth image data in PNG format |
+| **/<camera_name>/info**               | `sensor_msgs/msg/CameraInfo`             | Provides camera information (matrix, distortion coefficients, etc.) |
+| **/<camera_name>/pan_tilt**           | `image_recognition_msgs/msg/PanTiltMsgs` | Receives pan and tilt commands               |
+| **/<camera_name>/pan_tilt_status**    | `image_recognition_msgs/msg/PanTiltStatusMsgs` | Provides current pan and tilt status information |
+
 ## Using `v4l2-ctl` for Manual Configuration
 To manually configure pan and tilt values or test other camera settings, you can use the `v4l2-ctl` command-line tool:
 
