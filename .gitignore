@@ -4,3 +4,5 @@ usb_camera/config/
 *.pt
 
 image_recognition/yolov8_detection/yolov8_detection/__pycache__/
+
+image_projection/image_to_ros2_topic/image_to_ros2_topic/__pycache__/
