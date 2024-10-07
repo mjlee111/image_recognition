@@ -63,7 +63,9 @@ class YoloDetectorNode(Node):
             with open(class_path, 'r') as f:
                 self.classes = f.read().strip().split('\n')
                 if len(self.classes) == 0:
-                    self.get_logger().warn(f'Class file {class_path} is empty, using class indices.')
+                    self.get_logger().warn(
+                        f'Class file {class_path} is empty, using class indices.'
+                    )
                 else:
                     self.get_logger().info(f'Classes loaded from {class_path}')
         else:
@@ -107,7 +109,11 @@ class YoloDetectorNode(Node):
             bounding_box_msg.box = [float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])]
 
             class_idx = int(cls)
-            bounding_box_msg.class_ = self.classes[class_idx] if self.classes and class_idx < len(self.classes) else str(class_idx)
+            bounding_box_msg.class_ = (
+                self.classes[class_idx] 
+                if self.classes and class_idx < len(self.classes) 
+                else str(class_idx)
+            )
 
             self.bounding_box_publisher.publish(bounding_box_msg)
             self.get_logger().info(f'Published bounding box: {bounding_box_msg}')
