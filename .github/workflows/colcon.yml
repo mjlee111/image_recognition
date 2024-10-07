@@ -19,4 +19,5 @@ jobs:
         uses: ichiro-its/ros2-ci@v1.0.0
         with:
           apt-packages: libssh-dev libopencv-dev ros-${{ matrix.ros2-distro }}-cv-bridge
+          pip-packages: torch torchvision torchaudio ultralytics
           ros2-distro: ${{ matrix.ros2-distro }}
