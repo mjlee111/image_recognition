@@ -1,7 +1,3 @@
-아래는 `yolov8_detection` 패키지에 대한 `README.md` 파일의 예시입니다. 요청하신 형식에 맞춰 파라미터 표와 Prerequisites 섹션을 추가했습니다.
-
----
-
 # YOLOv8 Detection Node
 
 The `yolov8_detection` package is a ROS 2 node that utilizes the YOLOv8 model for real-time image recognition. This node subscribes to an image topic, processes the images using YOLOv8, and publishes the bounding box information for detected objects. It supports both CPU and GPU inference and is easily configurable via ROS parameters.
@@ -29,8 +25,8 @@ Before using this package, make sure the following dependencies are installed:
 To install the required libraries, run the following commands:
 
 ```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118  # For GPU support
-pip install ultralytics
+$ pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118  # For GPU support
+$ pip install ultralytics
 ```
 
 ## Installation
@@ -38,7 +34,7 @@ pip install ultralytics
 1. Clone the repository into your ROS 2 workspace:
    ```bash
    $ cd ~/colcon_ws/src
-   $ git clone https://github.com/mjlee111/yolov8_detection.git
+   $ git clone https://github.com/mjlee111/image_recognition.git
    ```
 
 2. Build the workspace:
