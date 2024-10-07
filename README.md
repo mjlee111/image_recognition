@@ -37,6 +37,7 @@ To use the packages in this repository, make sure you have the following install
 |-------------------|----------------------|---------------------------------------------------------------------|-----------------------------------------------------|
 | Camera Nodes      | `usb_camera`          | V4L2 USB Camera Node with lifecycle management.                     | [Link to docs](usb_camera/README.md)                |
 | Image Projection  | `pan_tilt_camera`     | Advanced V4L2 USB Camera Node with lifecycle management and pan-tilt control via ROS topics. | [Link to docs](image_projection/pan_tilt_camera/README.md) |
+| Image Projection  | `image_to_ros2_topic` | Publishes static image files (JPG, PNG) to ROS2 topics with configurable parameters.          | [Link to docs](image_projection/image_to_ros2_topic/README.md)        |
 | Image Recognition  | `yolov8_detection`    | Real-time image recognition using YOLOv8, with GPU support and dynamic parameter configuration. | [Link to docs](image_recognition/yolov8_detection/README.md)          |
 
 
