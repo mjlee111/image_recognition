@@ -93,13 +93,8 @@ In addition to publishing bounding box information, the node also publishes the 
 
 The processed image is published on the `yolo_output` topic, and each detected object's bounding box color is chosen randomly and consistently applied to objects of the same class.
 
-## Example for Displaying the Processed Image
+## Example with classic yolo test image
+Using `image_to_ros2_topic`, sample image test can be done.
 
-You can visualize the processed image with bounding boxes using `rqt_image_view` or any other ROS tool capable of subscribing to image topics:
-
-```bash
-$ rqt_image_view /camera/image_raw/yolo_output
-```
-
-This will display the images with bounding boxes drawn around detected objects, making it easier to verify detection results in real-time.
+![yolo_sample](../../docs/yolov8_detection/yolov8.gif)
 
