@@ -14,9 +14,6 @@ To use the packages in this repository, make sure you have the following install
 
 - **OpenCV**: Version **4.2** or higher  
   Required for image processing and camera interfacing.
-  
-- **V4L2 (Video4Linux2)**:  
-  Linux-based video capture and output library, necessary for interfacing with USB cameras.
 
 - **ROS2**:  
   ROS2 distribution, such as **Foxy** or **Humble**, is recommended.
