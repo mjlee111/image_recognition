@@ -21,6 +21,8 @@ from cv_bridge import CvBridge
 from ultralytics import YOLO
 import torch
 import os
+import cv2
+import random
 from image_recognition_msgs.msg import BoundingBoxMsgs
 
 
@@ -51,9 +53,13 @@ class YoloDetectorNode(Node):
             self.listener_callback,
             10
         )
+        
+        self.get_logger().info(f'Subscribing to topic : {image_topic}')
 
-        output_topic = f"{image_topic}/yolo_output"
-        self.bounding_box_publisher = self.create_publisher(BoundingBoxMsgs, output_topic, 10)
+        output_box_topic = f"{image_topic}/yolo_bboxes"
+        output_image_topic = f"{image_topic}/yolo_output"
+        self.bounding_box_publisher = self.create_publisher(BoundingBoxMsgs, output_box_topic, 10)
+        self.image_publisher = self.create_publisher(Image, output_image_topic, 10)
 
         self.bridge = CvBridge()
         self.model = YOLO(model_path)
@@ -84,6 +90,26 @@ class YoloDetectorNode(Node):
 
         self.model.to(self.device)
 
+        self.class_colors = {}
+        self.generate_class_colors()
+
+    def generate_class_colors(self):
+        """Generate random colors for each class."""
+        if self.classes:
+            for i, class_name in enumerate(self.classes):
+                self.class_colors[class_name] = (
+                    random.randint(0, 255), 
+                    random.randint(0, 255), 
+                    random.randint(0, 255)
+                )
+        else:
+            for i in range(254):  
+                self.class_colors[str(i)] = (
+                    random.randint(0, 255), 
+                    random.randint(0, 255), 
+                    random.randint(0, 255)
+                )
+
     def listener_callback(self, msg):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(
@@ -109,14 +135,24 @@ class YoloDetectorNode(Node):
             bounding_box_msg.box = [float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])]
 
             class_idx = int(cls)
-            bounding_box_msg.class_ = (
-                self.classes[class_idx] 
-                if self.classes and class_idx < len(self.classes) 
-                else str(class_idx)
-            )
+            class_name = self.classes[class_idx] if self.classes and class_idx < len(self.classes) else str(class_idx)
+            bounding_box_msg.class_name = class_name
 
             self.bounding_box_publisher.publish(bounding_box_msg)
             self.get_logger().info(f'Published bounding box: {bounding_box_msg}')
+
+            color = self.class_colors.get(class_name, (0, 255, 0))  
+
+            cv2.rectangle(cv_image, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), color, 2)
+            label = f"{class_name}"
+            cv2.putText(cv_image, label, (int(bbox[0]), int(bbox[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
+        try:
+            img_msg_with_boxes = self.bridge.cv2_to_imgmsg(cv_image, encoding="bgr8")
+            self.image_publisher.publish(img_msg_with_boxes)
+            self.get_logger().info('Published image with bounding boxes.')
+        except Exception as e:
+            self.get_logger().error(f'Failed to convert image with bounding boxes: {e}')
 
 
 def main(args=None):

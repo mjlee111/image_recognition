@@ -33,7 +33,7 @@ def generate_launch_description():
             name='yolo_detector_node',
             output='screen',
             parameters=[{
-                'image_topic': '/camera/image_raw',
+                'image_topic': '/image_to_topic/image_raw',
                 'use_gpu': False,
                 'model_path': model_path,
                 'class_path': class_path,
