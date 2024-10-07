@@ -23,6 +23,7 @@ import torch
 import os
 from image_recognition_msgs.msg import BoundingBoxMsgs
 
+
 class YoloDetectorNode(Node):
     def __init__(self):
         super().__init__('yolo_detector_node')
@@ -37,13 +38,12 @@ class YoloDetectorNode(Node):
         use_gpu = self.get_parameter('use_gpu').get_parameter_value().bool_value
         model_path = self.get_parameter('model_path').get_parameter_value().string_value
         class_path = self.get_parameter('class_path').get_parameter_value().string_value
-        image_encoding = self.get_parameter('image_encoding').get_parameter_value().string_value
 
         if not os.path.exists(model_path):
             self.get_logger().error(f'Model file not found: {model_path}')
             return
-        else :
-            self.get_logger().info(f'Model file found : {model_path}')
+        else:
+            self.get_logger().info(f'Model file found: {model_path}')
 
         self.subscription = self.create_subscription(
             Image,
@@ -56,10 +56,9 @@ class YoloDetectorNode(Node):
         self.bounding_box_publisher = self.create_publisher(BoundingBoxMsgs, output_topic, 10)
 
         self.bridge = CvBridge()
-
         self.model = YOLO(model_path)
-
         self.classes = None
+
         if class_path and os.path.exists(class_path):
             with open(class_path, 'r') as f:
                 self.classes = f.read().strip().split('\n')
@@ -75,7 +74,7 @@ class YoloDetectorNode(Node):
                 self.get_logger().info('Using GPU for YOLO inference.')
                 self.device = 'cuda'
             else:
-                self.get_logger().warn('use_gpu is True, but no GPU is available. Falling back to CPU.')
+                self.get_logger().warn('No GPU available. Falling back to CPU.')
                 self.device = 'cpu'
         else:
             self.get_logger().info('Using CPU for YOLO inference.')
@@ -85,7 +84,10 @@ class YoloDetectorNode(Node):
 
     def listener_callback(self, msg):
         try:
-            cv_image = self.bridge.imgmsg_to_cv2(msg, self.get_parameter('image_encoding').get_parameter_value().string_value)
+            cv_image = self.bridge.imgmsg_to_cv2(
+                msg,
+                self.get_parameter('image_encoding').get_parameter_value().string_value
+            )
         except Exception as e:
             self.get_logger().error(f'Failed to convert image: {e}')
             return
@@ -105,11 +107,11 @@ class YoloDetectorNode(Node):
             bounding_box_msg.box = [float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])]
 
             class_idx = int(cls)
-
             bounding_box_msg.class_ = self.classes[class_idx] if self.classes and class_idx < len(self.classes) else str(class_idx)
 
             self.bounding_box_publisher.publish(bounding_box_msg)
             self.get_logger().info(f'Published bounding box: {bounding_box_msg}')
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -117,6 +119,7 @@ def main(args=None):
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
