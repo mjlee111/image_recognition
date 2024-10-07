@@ -1,6 +1,6 @@
 # YOLOv8 Detection Node
 
-The `yolov8_detection` package is a ROS 2 node that utilizes the YOLOv8 model for real-time image recognition. This node subscribes to an image topic, processes the images using YOLOv8, and publishes the bounding box information for detected objects. It supports both CPU and GPU inference and is easily configurable via ROS parameters.
+The `yolov8_detection` package is a ROS 2 node that utilizes the YOLOv8 model for real-time image recognition. This node subscribes to an image topic, processes the images using YOLOv8, draws bounding boxes on the detected objects, and publishes both the modified image and bounding box information. It supports both CPU and GPU inference and is easily configurable via ROS parameters.
 
 ## Key Features
 
@@ -8,6 +8,7 @@ The `yolov8_detection` package is a ROS 2 node that utilizes the YOLOv8 model fo
 - **GPU Support**: The node supports GPU inference if available, ensuring faster performance for object detection tasks.
 - **Configurable Parameters**: The node's behavior, such as image topic, model path, and class labels, can be configured through parameters.
 - **Bounding Box Publishing**: Detected objects are published as bounding boxes on a dedicated ROS topic, along with their class labels.
+- **Image Output with Bounding Boxes**: The node publishes the processed image with bounding boxes drawn around detected objects.
 - **Flexible Deployment**: The node can be deployed on a variety of systems, ranging from embedded devices to high-performance servers.
 
 ## Prerequisites
@@ -73,7 +74,8 @@ The following parameters can be configured when launching the node:
 
 | Topic Name                      | Message Type                                | Role                                         |
 |----------------------------------|---------------------------------------------|----------------------------------------------|
-| **/camera/image_raw/yolo_output**| `image_recognition_msgs/msg/BoundingBoxMsgs` | Publishes bounding box information for detected objects. |
+| **/camera/image_raw/yolo_bboxes**| `image_recognition_msgs/msg/BoundingBoxMsgs` | Publishes bounding box information for detected objects. |
+| **/camera/image_raw/yolo_output**| `sensor_msgs/msg/Image`                     | Publishes the processed image with bounding boxes drawn on detected objects. |
 | **/camera/image_raw**            | `sensor_msgs/msg/Image`                     | Subscribes to real-time image data from the camera.        |
 
 ## Using GPU for YOLO Inference
@@ -85,9 +87,19 @@ Example command:
 $ ros2 launch yolov8_detection yolov8_detection_launch.py use_gpu:=True
 ```
 
-## Example Usage
+## Image with Bounding Boxes
 
-Launch the YOLOv8 detection node with an image topic:
+In addition to publishing bounding box information, the node also publishes the processed image with bounding boxes drawn around detected objects. This can be useful for visual verification of the detections.
+
+The processed image is published on the `yolo_output` topic, and each detected object's bounding box color is chosen randomly and consistently applied to objects of the same class.
+
+## Example for Displaying the Processed Image
+
+You can visualize the processed image with bounding boxes using `rqt_image_view` or any other ROS tool capable of subscribing to image topics:
+
 ```bash
-$ ros2 launch yolov8_detection yolov8_detection_launch.py image_topic:=/my_camera/image_raw
+$ rqt_image_view /camera/image_raw/yolo_output
 ```
+
+This will display the images with bounding boxes drawn around detected objects, making it easier to verify detection results in real-time.
+
