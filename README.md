@@ -33,10 +33,12 @@ To use the packages in this repository, make sure you have the following install
 ## Packages
 <div align="center">
 
-| Category          | Package           | Description                                                         | Documentation                                        |
-|-------------------|-------------------|---------------------------------------------------------------------|-----------------------------------------------------|
-| Camera Nodes      | `usb_camera`      | V4L2 USB Camera Node with lifecycle management.                     | [Link to docs](usb_camera/README.md)                |
-| Image Projection  | `pan_tilt_camera` | Advanced V4L2 USB Camera Node with lifecycle management and pan-tilt control via ROS topics. | [Link to docs](image_projection/pan_tilt_camera/README.md) |
+| Category          | Package              | Description                                                         | Documentation                                        |
+|-------------------|----------------------|---------------------------------------------------------------------|-----------------------------------------------------|
+| Camera Nodes      | `usb_camera`          | V4L2 USB Camera Node with lifecycle management.                     | [Link to docs](usb_camera/README.md)                |
+| Image Projection  | `pan_tilt_camera`     | Advanced V4L2 USB Camera Node with lifecycle management and pan-tilt control via ROS topics. | [Link to docs](image_projection/pan_tilt_camera/README.md) |
+| Image Recognition  | `yolov8_detection`    | Real-time image recognition using YOLOv8, with GPU support and dynamic parameter configuration. | [Link to docs](image_recognition/yolov8_detection/README.md)          |
+
 
 </div>
 
