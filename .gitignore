@@ -1,2 +1,6 @@
 
 usb_camera/config/
+
+*.pt
+
+image_recognition/yolov8_detection/yolov8_detection/__pycache__/
