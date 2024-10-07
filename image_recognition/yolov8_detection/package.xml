@@ -4,7 +4,7 @@
   <name>yolov8_detection</name>
   <version>0.0.1</version>
   <description>Image recognition package using YoloV8</description>
-  <maintainer email="menggu1234@naver.com">m</maintainer>
+  <maintainer email="menggu1234@naver.com">mjlee111</maintainer>
   <license>Apache2.0</license>
 
   <test_depend>ament_copyright</test_depend>

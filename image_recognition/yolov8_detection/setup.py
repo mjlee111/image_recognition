@@ -19,7 +19,7 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='m',
+    maintainer='mjlee111',
     maintainer_email='menggu1234@naver.com',
     description='Image recognition package using YoloV8',
     license='Apache2.0',
