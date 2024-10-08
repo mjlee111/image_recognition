@@ -3,9 +3,7 @@ Stack for image recognition packages based on ROS2.
 
 <div align="center">
   
-[![Build Status - Foxy](https://github.com/mjlee111/image_recognition/actions/workflows/colcon.yml/badge.svg?branch=master&event=push&job=build-foxy)](https://github.com/mjlee111/image_recognition/actions/workflows/colcon.yml)
-
-[![Build Status - Humble](https://github.com/mjlee111/image_recognition/actions/workflows/colcon.yml/badge.svg?branch=master&event=push&job=build-humble)](https://github.com/mjlee111/image_recognition/actions/workflows/colcon.yml)
+[![Build and Test - Foxy](https://github.com/mjlee111/image_recognition/actions/workflows/foxy.yml/badge.svg?branch=master&event=push)](https://github.com/mjlee111/image_recognition/actions/workflows/foxy.yml)[![Build and Test - Humble](https://github.com/mjlee111/image_recognition/actions/workflows/humble.yml/badge.svg?branch=master&event=push)](https://github.com/mjlee111/image_recognition/actions/workflows/humble.yml)
 
 </div>
 

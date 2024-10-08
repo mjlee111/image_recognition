@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build and Test - Foxy
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build-foxy:
+  build:
     name: Build and Test on ROS2 Foxy
     runs-on: ubuntu-latest
     steps:
@@ -20,17 +20,3 @@ jobs:
           apt-packages: libssh-dev libopencv-dev ros-foxy-cv-bridge
           pip-packages: torch torchvision torchaudio ultralytics
           ros2-distro: foxy
-
-  build-humble:
-    name: Build and Test on ROS2 Humble
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checking out
-        uses: actions/checkout@v2.3.4
-
-      - name: Building and testing on ROS2 Humble
-        uses: ichiro-its/ros2-ci@v1.0.0
-        with:
-          apt-packages: libssh-dev libopencv-dev ros-humble-cv-bridge
-          pip-packages: torch torchvision torchaudio ultralytics
-          ros2-distro: humble
