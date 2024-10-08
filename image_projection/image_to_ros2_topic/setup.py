@@ -21,7 +21,7 @@ setup(
     maintainer='mjlee111',
     maintainer_email='menggu1234@naver.com',
     description='Image projection package for publishing image file to topic',
-    license='Apache2.0',
+    license='Apache-2.0',  
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
