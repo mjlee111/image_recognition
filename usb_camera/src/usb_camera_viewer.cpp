@@ -18,7 +18,7 @@
 
 UsbCameraViewer::UsbCameraViewer() : Node("usb_camera_viewer")
 {
-  this->declare_parameter<std::string>("image_topic", "/camera/image_raw");
+  image_topic = this->declare_parameter<std::string>("image_topic", "/camera/image_raw");
 
   image_topic = this->get_parameter("image_topic").as_string();
 
@@ -31,10 +31,17 @@ UsbCameraViewer::UsbCameraViewer() : Node("usb_camera_viewer")
 
 void UsbCameraViewer::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
+  static cv::Mat frame;  // memory leak
   try {
-    cv::Mat frame = cv_bridge::toCvShare(msg, "bgr8")->image;
+    frame = cv_bridge::toCvShare(msg, "bgr8")->image;
+
+    if (frame.empty()) {
+      RCLCPP_ERROR(this->get_logger(), "Received empty frame.");
+      return;
+    }
 
     cv::imshow(image_topic.c_str(), frame);
+    cv::waitKey(1);
 
     if (cv::waitKey(10) == 27) {
       rclcpp::shutdown();
