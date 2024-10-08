@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>video_to_ros2_topic</name>
+  <version>0.0.1</version>
+  <description>Image projection package for publishing video file to topic</description>
+  <maintainer email="menggu1234@naver.com">mjlee111</maintainer>
+  <license>Apache2.0</license>
+
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
