@@ -22,9 +22,9 @@ To use the packages in this repository, make sure you have the following install
 
 | Component   | Version          |
 |-------------|------------------|
-| **OS**      | Ubuntu 20.04     |
-| **ROS**     | Foxy Fitzroy     |
-| **OpenCV**  | 4.5.2            |
+| **OS**      | Ubuntu 22.04     |
+| **ROS**     | Humble Hawksbill     |
+| **OpenCV**  | 4.10.0            |
 
 
 ## Packages
