@@ -1,6 +1,4 @@
-
-usb_camera/config/
-
 *.pt
 *.mkv
 **/__pycache__
+.vscode
