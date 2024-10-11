@@ -25,7 +25,10 @@ import cv2
 import numpy as np
 import random
 from image_recognition_msgs.msg import SegmentationMsgs
+import sys
  
+os.environ['YOLO_VERBOSE'] = 'False'
+
 class YoloSegmentationNode(Node):
     def __init__(self):
         super().__init__('yolo_segmentation_node')
@@ -46,7 +49,8 @@ class YoloSegmentationNode(Node):
 
         if not os.path.exists(model_path):
             self.get_logger().error(f'Model file not found: {model_path}')
-            return
+            rclpy.shutdown()
+            sys.exit(1)        
         else:
             self.get_logger().info(f'Model file found: {model_path}')
 
@@ -101,10 +105,10 @@ class YoloSegmentationNode(Node):
         
     def initialize_yolo_model(self, model_path, yolo_version):
         if yolo_version.lower() == 'v8':
-            return YOLO(model_path, task='segment')
-        else:
             self.get_logger().warn(f'Unsupported YOLO version: {yolo_version}. Using YOLOv8 as default.')
-            return YOLO(model_path, task='segment')
+            return YOLO(model_path, task='segment', verbose=False)
+        else:
+            return YOLO(model_path, task='segment', verbose=False)
         
     def generate_class_colors(self):
         """Generate random colors for each class."""
