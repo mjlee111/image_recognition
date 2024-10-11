@@ -19,6 +19,8 @@ To use the packages in this repository, make sure you have the following install
 - **ROS2**:  
   ROS2 distribution, such as **Foxy** or **Humble**, is recommended.
 
+Requirements might vary depending on the package. Please refer to each package's README for more details.
+
 ## Development Environment
 
 | Component   | Version          |
