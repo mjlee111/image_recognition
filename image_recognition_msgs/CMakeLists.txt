@@ -30,6 +30,7 @@ set(msg_files
   "msg/VideoDeviceCtrlMsgs.msg"
   "msg/ImageCtrlMsgs.msg"
   "msg/BoundingBoxMsgs.msg"
+  "msg/SegmentationMsgs.msg"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}
