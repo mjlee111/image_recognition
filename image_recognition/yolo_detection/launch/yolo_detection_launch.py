@@ -38,7 +38,7 @@ def generate_launch_description():
                 'model_path': model_path,
                 'class_path': class_path,
                 'image_encoding': 'bgr8',
-                'yolo_version': 'v8',
+                'yolo_version': 'v11',
             }]
         )
     ])
