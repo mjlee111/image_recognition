@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>yolov8_detection</name>
+  <name>yolo_detection</name>
   <version>0.0.1</version>
-  <description>Image recognition package using YoloV8</description>
+  <description>Image recognition package using Yolo</description>
   <maintainer email="menggu1234@naver.com">mjlee111</maintainer>
   <license>Apache2.0</license>
 

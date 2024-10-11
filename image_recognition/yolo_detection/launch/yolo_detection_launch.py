@@ -21,16 +21,16 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    package_share_directory = get_package_share_directory('yolov8_detection')
+    package_share_directory = get_package_share_directory('yolo_detection')
 
-    model_path = os.path.join(package_share_directory, 'model', 'yolov8n.pt')
+    model_path = os.path.join(package_share_directory, 'model', 'yolov11n.pt')
     class_path = os.path.join(package_share_directory, 'model', 'class.txt')
 
     return LaunchDescription([
         Node(
-            package='yolov8_detection',
-            executable='yolov8_detection_node',
-            name='yolo_detector_node',
+            package='yolo_detection',
+            executable='yolo_detection_node',
+            name='yolo_detection_node',
             output='screen',
             parameters=[{
                 'image_topic': '/image_to_topic/image_raw',
@@ -38,6 +38,7 @@ def generate_launch_description():
                 'model_path': model_path,
                 'class_path': class_path,
                 'image_encoding': 'bgr8',
+                'yolo_version': 'v8',
             }]
         )
     ])

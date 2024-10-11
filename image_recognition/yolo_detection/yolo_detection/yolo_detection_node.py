@@ -28,18 +28,21 @@ from image_recognition_msgs.msg import BoundingBoxMsgs
 
 class YoloDetectorNode(Node):
     def __init__(self):
-        super().__init__('yolo_detector_node')
+        super().__init__('yolo_detection_node')
 
         self.declare_parameter('image_topic', '/camera/image_raw')
         self.declare_parameter('use_gpu', False)
-        self.declare_parameter('model_path', 'yolov8n.pt')
+        self.declare_parameter('model_path', 'yolov11n.pt')
         self.declare_parameter('class_path', 'class.txt')
         self.declare_parameter('image_encoding', 'bgr8')
+        self.declare_parameter('yolo_version', 'v11')
+
 
         image_topic = self.get_parameter('image_topic').get_parameter_value().string_value
         use_gpu = self.get_parameter('use_gpu').get_parameter_value().bool_value
         model_path = self.get_parameter('model_path').get_parameter_value().string_value
         class_path = self.get_parameter('class_path').get_parameter_value().string_value
+        yolo_version = self.get_parameter('yolo_version').get_parameter_value().string_value
 
         if not os.path.exists(model_path):
             self.get_logger().error(f'Model file not found: {model_path}')
@@ -62,7 +65,8 @@ class YoloDetectorNode(Node):
         self.image_publisher = self.create_publisher(Image, output_image_topic, 10)
 
         self.bridge = CvBridge()
-        self.model = YOLO(model_path)
+        self.model = self.initialize_yolo_model(model_path, yolo_version)
+        self.get_logger().info(f'YOLO model initialized: {self.model}')
         self.classes = None
 
         if class_path and os.path.exists(class_path):
@@ -92,6 +96,13 @@ class YoloDetectorNode(Node):
 
         self.class_colors = {}
         self.generate_class_colors()
+        
+    def initialize_yolo_model(self, model_path, yolo_version):
+        if yolo_version.lower() == 'v8':
+            return YOLO(model_path)
+        else:
+            self.get_logger().warn(f'Unsupported YOLO version: {yolo_version}. Using YOLOv8 as default.')
+            return YOLO(model_path)
 
     def generate_class_colors(self):
         """Generate random colors for each class."""
