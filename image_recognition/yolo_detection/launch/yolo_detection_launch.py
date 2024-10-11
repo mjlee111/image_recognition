@@ -15,10 +15,11 @@
 #  */
 
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 import os
 from ament_index_python.packages import get_package_share_directory
-
 
 def generate_launch_description():
     package_share_directory = get_package_share_directory('yolo_detection')
@@ -26,19 +27,28 @@ def generate_launch_description():
     model_path = os.path.join(package_share_directory, 'model', 'yolov11n.pt')
     class_path = os.path.join(package_share_directory, 'model', 'class.txt')
 
+    image_topic_arg = DeclareLaunchArgument('image_topic', default_value='/image_to_topic/image_raw')
+    use_gpu_arg = DeclareLaunchArgument('use_gpu', default_value='False')
+    image_encoding_arg = DeclareLaunchArgument('image_encoding', default_value='bgr8')
+    yolo_version_arg = DeclareLaunchArgument('yolo_version', default_value='v8')
+
     return LaunchDescription([
+        image_topic_arg,
+        use_gpu_arg,
+        image_encoding_arg,
+        yolo_version_arg,
         Node(
             package='yolo_detection',
             executable='yolo_detection_node',
             name='yolo_detection_node',
             output='screen',
             parameters=[{
-                'image_topic': '/image_to_topic/image_raw',
-                'use_gpu': False,
+                'image_topic': LaunchConfiguration('image_topic'),
+                'use_gpu': LaunchConfiguration('use_gpu'),
                 'model_path': model_path,
                 'class_path': class_path,
-                'image_encoding': 'bgr8',
-                'yolo_version': 'v11',
+                'image_encoding': LaunchConfiguration('image_encoding'),
+                'yolo_version': LaunchConfiguration('yolo_version'),
             }]
         )
     ])
