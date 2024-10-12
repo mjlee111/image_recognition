@@ -148,3 +148,17 @@ set(OpenCV_MODULES_SUFFIX )
    colcon build --symlink-install
    source install/setup.bash
    ```
+
+## ROS2 Dependency Reconfiguration
+Packages that depend on OpenCV will need to be reconfigured to use the new OpenCV version.
+
+Change CMakeLists.txt of the package to use the new OpenCV version.
+
+Change: 
+```cmake
+find_package(OpenCV REQUIRED)
+```
+to:
+```cmake
+find_package(OpenCV 4.10.0 REQUIRED)
+```
