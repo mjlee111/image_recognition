@@ -20,7 +20,7 @@ endif()
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 find_package(rclcpp_lifecycle REQUIRED)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4.10.0 REQUIRED)
 
 include_directories(include)
 
@@ -30,7 +30,9 @@ ament_target_dependencies(usb_camera_node rclcpp sensor_msgs std_msgs cv_bridge 
 
 # Build usb_camera_viewer_node
 add_executable(usb_camera_viewer_node src/usb_camera_viewer.cpp)
-ament_target_dependencies(usb_camera_viewer_node rclcpp sensor_msgs std_msgs cv_bridge OpenCV)
+target_include_directories(usb_camera_viewer_node PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(usb_camera_viewer_node ${OpenCV_LIBRARIES})
+ament_target_dependencies(usb_camera_viewer_node rclcpp sensor_msgs std_msgs cv_bridge )
 
 # Install launch files
 install(DIRECTORY launch
