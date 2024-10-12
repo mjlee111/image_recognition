@@ -13,11 +13,10 @@ This repository provides a set of packages designed for image recognition and ca
 ## Requirements
 To use the packages in this repository, make sure you have the following installed:
 
-- **OpenCV**: Version **4.2** or higher  
-  Required for image processing and camera interfacing.
-
-- **ROS2**:  
-  ROS2 distribution, such as **Foxy** or **Humble**, is recommended.
+| Component | Version/Distribution | Notes |
+|-----------|----------------------|-------|
+| OpenCV    | 4.2 or higher        | Required for image processing and camera interfacing |
+| ROS2      | Foxy or Humble       | Recommended ROS2 distributions |
 
 Requirements might vary depending on the package. Please refer to each package's README for more details.
 
