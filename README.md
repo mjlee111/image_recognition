@@ -51,6 +51,6 @@ I welcome all contributions! Whether it's bug reports, feature suggestions, or p
 This project is licensed under the [Apache 2.0 License](LICENSE). Feel free to use and distribute it according to the terms of the license.
 
 ## Contact
-If you have any questions or feedback, don't hesitate to reach out! You can contact us at [menggu1234@naver.com][email].
+If you have any questions or feedback, don't hesitate to reach out! You can contact me at [menggu1234@naver.com][email].
 
 [email]: mailto:menggu1234@naver.com
