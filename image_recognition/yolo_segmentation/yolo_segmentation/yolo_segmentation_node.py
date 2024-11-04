@@ -64,10 +64,8 @@ class YoloSegmentationNode(Node):
         self.get_logger().info(f'Subscribing to topic : {image_topic}')
 
         output_seg_topic = f"{image_topic}/yolo_segmentation"
-        output_image_topic = f"{image_topic}/yolo_output"
         output_seg_image_topic = f"{image_topic}/yolo_segmentation_image"
         self.segmentation_publisher = self.create_publisher(SegmentationMsgs, output_seg_topic, 10)
-        self.image_publisher = self.create_publisher(Image, output_image_topic, 10)
         self.seg_image_publisher = self.create_publisher(Image, output_seg_image_topic, 10)
 
         self.bridge = CvBridge()
@@ -174,10 +172,6 @@ class YoloSegmentationNode(Node):
                 cv2.putText(segmentation_image, class_name, (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         try:
-            img_msg_with_seg = self.bridge.cv2_to_imgmsg(cv_image, encoding="bgr8")
-            self.image_publisher.publish(img_msg_with_seg)
-            self.get_logger().info('Published original image.')
-
             seg_img_msg = self.bridge.cv2_to_imgmsg(segmentation_image, encoding="bgr8")
             self.seg_image_publisher.publish(seg_img_msg)
             self.get_logger().info('Published segmentation image.')
