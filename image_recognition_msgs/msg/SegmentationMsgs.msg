@@ -1,2 +1,4 @@
 # Yolo Segmentation Msgs
-string class_name   # Class Name
+std_msgs/Header header  # Header
+int32 class_id  # Class ID
+image_recognition_msgs/CoordinateMsgs[] mask  # Mask
