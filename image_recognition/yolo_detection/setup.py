@@ -17,7 +17,13 @@ setup(
         ('share/' + package_name + '/launch', ['launch/yolo_detection_launch.py']),
         ('share/' + package_name + '/model', model_files), 
     ],
-    install_requires=['setuptools'],
+    install_requires=[
+        'numpy>=1.23.5,<2.0.0',
+        'opencv-python==4.8.1.78',
+        'matplotlib',
+        'ultralytics',
+        'torch'
+    ],
     zip_safe=True,
     maintainer='mjlee111',
     maintainer_email='menggu1234@naver.com',
