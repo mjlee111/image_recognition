@@ -43,7 +43,7 @@ Viewer launch command:
 $ ros2 launch usb_camera image_viewer.py image_topic:=/your/ros/image/topic
 ```
 
-![usb_camera_viewer_sample](../docs/usb_camera/usb_camera_sample.jpg)
+![usb_camera_viewer_sample](../../docs/usb_camera/usb_camera_sample.jpg)
 
 ## Parameters
 
