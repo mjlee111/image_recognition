@@ -17,6 +17,8 @@ To use the packages in this repository, make sure you have the following install
 |-----------|----------------------|-------|
 | OpenCV    | 4.2 or higher        | Required for image processing and camera interfacing |
 | ROS2      | Foxy or Humble       | Recommended ROS2 distributions |
+| Python    | 3.8 or higher        | Required for Python scripts |
+| Setuptools| 58.2.0               | Required for Python scripts |
 
 Requirements might vary depending on the package. Please refer to each package's README for more details.
 
