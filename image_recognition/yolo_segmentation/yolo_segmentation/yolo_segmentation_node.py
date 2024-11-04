@@ -24,7 +24,7 @@ import os
 import cv2
 import numpy as np
 import random
-from image_recognition_msgs.msg import SegmentationMsgs
+from image_recognition_msgs.msg import SegmentationMsgs, CoordinateMsgs
 import sys
  
 os.environ['YOLO_VERBOSE'] = 'False'
@@ -128,55 +128,71 @@ class YoloSegmentationNode(Node):
     def listener_callback(self, msg):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(
-            msg,
-            self.get_parameter('image_encoding').get_parameter_value().string_value
-        )
-        except Exception as e:
-            self.get_logger().error(f'Failed to convert image: {e}')
-            return
-
-        try:
+                msg,
+                self.get_parameter('image_encoding').get_parameter_value().string_value
+            )
+            
             results = self.model.predict(source=cv_image, device=self.device, show=False)
-        except Exception as e:
-            self.get_logger().error(f'YOLO prediction failed: {e}')
-            return
-
-        if len(results) == 0 or len(results[0].boxes) == 0:
-            self.get_logger().info('No objects detected.')
-            return
-
-        segmentation_image = cv_image.copy()
-
-        for i, (cls, mask) in enumerate(zip(results[0].boxes.cls, results[0].masks.data)):
-            segmentation_msg = SegmentationMsgs()
-            class_idx = int(cls)
-            class_name = self.classes[class_idx] if self.classes and class_idx < len(self.classes) else str(class_idx)
-            segmentation_msg.class_name = class_name
-
-            self.segmentation_publisher.publish(segmentation_msg)
-            self.get_logger().info(f'Published segmentation: {segmentation_msg}')
-
-            color = self.class_colors.get(class_name, (0, 255, 0))
-        
-            mask_np = mask.cpu().numpy()
-            mask_np = cv2.resize(mask_np, (cv_image.shape[1], cv_image.shape[0]))
-            mask_np = mask_np > 0.5
-            overlay = segmentation_image.copy()
-            overlay[mask_np] = overlay[mask_np] * 0.5 + np.array(color) * 0.5
-            cv2.addWeighted(overlay, 0.5, segmentation_image, 0.5, 0, segmentation_image)
-
-            moments = cv2.moments(mask_np.astype(np.uint8))
-            if moments["m00"] != 0:
-                cX = int(moments["m10"] / moments["m00"])
-                cY = int(moments["m01"] / moments["m00"])
-                cv2.putText(segmentation_image, class_name, (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-
-        try:
+            
+            if len(results) == 0 or len(results[0].boxes) == 0:
+                return
+            
+            segmentation_image = cv_image.copy()
+            current_time = self.get_clock().now().to_msg()
+            
+            segmentation_msgs = []
+            
+            for cls, mask in zip(results[0].boxes.cls, results[0].masks.data):
+                segmentation_msg = SegmentationMsgs()
+                segmentation_msg.header.frame_id = msg.header.frame_id
+                segmentation_msg.header.stamp = current_time
+                
+                class_idx = int(cls)
+                class_name = self.classes[class_idx] if self.classes and class_idx < len(self.classes) else str(class_idx)
+                segmentation_msg.class_id = class_idx
+                color = self.class_colors.get(class_name, (0, 255, 0))
+                
+                mask_np = mask.cpu().numpy()
+                
+                scale_factor = 2
+                mask_small = cv2.resize(mask_np, 
+                                      (mask_np.shape[1]//scale_factor, 
+                                       mask_np.shape[0]//scale_factor))
+                mask_small = (mask_small > 0.5).astype(np.uint8)
+                contours, _ = cv2.findContours(mask_small, 
+                                             cv2.RETR_EXTERNAL, 
+                                             cv2.CHAIN_APPROX_SIMPLE)
+                
+                if contours:
+                    coordinates = np.vstack([cont.squeeze() for cont in contours]) * scale_factor
+                    segmentation_msg.mask = [CoordinateMsgs(xy=coord.tolist()) 
+                                           for coord in coordinates if len(coord) == 2]
+                
+                mask_np = cv2.resize(mask_np, (cv_image.shape[1], cv_image.shape[0])) > 0.5
+                overlay = segmentation_image.copy()
+                overlay[mask_np] = overlay[mask_np] * 0.5 + np.array(color) * 0.5
+                cv2.addWeighted(overlay, 0.5, segmentation_image, 0.5, 0, segmentation_image)
+                
+                M = cv2.moments(mask_np.astype(np.uint8))
+                if M["m00"] != 0:
+                    cX = int(M["m10"] / M["m00"])
+                    cY = int(M["m01"] / M["m00"])
+                    cv2.putText(segmentation_image, class_name, 
+                              (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 
+                              0.5, color, 2)
+                
+                segmentation_msgs.append(segmentation_msg)
+            
+            for msg in segmentation_msgs:
+                self.segmentation_publisher.publish(msg)
+            
             seg_img_msg = self.bridge.cv2_to_imgmsg(segmentation_image, encoding="bgr8")
             self.seg_image_publisher.publish(seg_img_msg)
-            self.get_logger().info('Published segmentation image.')
+            
         except Exception as e:
-            self.get_logger().error(f'Failed to convert or publish images: {e}')
+            self.get_logger().error(f'Error in processing: {e}')
+            return
+
 
 def main(args=None):
     rclpy.init(args=args)
