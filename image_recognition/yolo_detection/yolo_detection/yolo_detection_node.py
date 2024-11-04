@@ -146,6 +146,8 @@ class YoloDetectorNode(Node):
 
         for i, (cls, bbox) in enumerate(zip(results[0].boxes.cls, results[0].boxes.xyxy)):
             bounding_box_msg = BoundingBoxMsgs()
+            bounding_box_msg.header.frame_id = msg.header.frame_id
+            bounding_box_msg.header.stamp = self.get_clock().now().to_msg()
             bounding_box_msg.box = [float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])]
 
             class_idx = int(cls)
