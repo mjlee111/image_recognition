@@ -28,6 +28,11 @@ include_directories(include)
 add_executable(fisheye_image_control_node src/image_ctrl.cpp)
 ament_target_dependencies(fisheye_image_control_node rclcpp sensor_msgs std_msgs cv_bridge rclcpp_lifecycle)
 
+# Build image_undistort_node
+add_executable(image_undistort_node src/image_undistort.cpp)
+ament_target_dependencies(image_undistort_node rclcpp sensor_msgs std_msgs cv_bridge)
+target_link_libraries(image_undistort_node ${OpenCV_LIBS})
+
 # Install launch files
 install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}/
@@ -41,6 +46,7 @@ install(DIRECTORY config
 # Install the executables
 install(TARGETS
   fisheye_image_control_node
+  image_undistort_node
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
