@@ -77,7 +77,6 @@ The following parameters can be configured when launching the node:
 |----------------------------------|---------------------------------------------|----------------------------------------------|
 | **/camera/image_raw/yolo_bboxes**| `image_recognition_msgs/msg/BoundingBoxMsgs` | Publishes bounding box information for detected objects. |
 | **/camera/image_raw/yolo_output**| `sensor_msgs/msg/Image`                     | Publishes the processed image with bounding boxes drawn on detected objects. |
-| **/camera/image_raw**            | `sensor_msgs/msg/Image`                     | Subscribes to real-time image data from the camera.        |
 
 ## Using GPU for YOLO Inference
 

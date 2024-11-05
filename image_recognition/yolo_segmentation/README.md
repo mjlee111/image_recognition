@@ -76,7 +76,6 @@ The following parameters can be configured when launching the node:
 | Topic Name                           | Message Type                                | Role                                                                |
 |---------------------------------------|---------------------------------------------|---------------------------------------------------------------------|
 | **/camera/image_raw/yolo_segmentation**| `image_recognition_msgs/msg/SegmentationMsgs`| Publishes segmentation information for detected objects.             |
-| **/camera/image_raw/yolo_output**     | `sensor_msgs/msg/Image`                     | Publishes the processed image with segmentation overlays.           |
 | **/camera/image_raw/yolo_segmentation_image**| `sensor_msgs/msg/Image`                   | Publishes the segmented image with color overlays for detected objects. |
 
 ## Using GPU for YOLO Inference
