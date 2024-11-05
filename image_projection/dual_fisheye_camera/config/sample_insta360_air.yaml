@@ -1,11 +1,11 @@
 /**:
     ros__parameters:
       viewer: true
-      camera_name: "insta360"
+      camera_name: "insta360air"
       topic: "/camera/image_raw"
       compressed_topic: "/camera/compressed_image"
       compressed_depth_topic: "/camera/compressed_depth"
-      device: "/dev/insta360"
+      device: "/dev/insta360air"
       frame_id: "camera"
       resolution: "1472x736"
       fps: 30.0
