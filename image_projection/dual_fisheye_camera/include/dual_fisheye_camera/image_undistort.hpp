@@ -25,9 +25,13 @@ private:
   int image_height_;
   std::string image_topic_, calibrated_image_topic_;
   std::vector<double> camera_matrix_data_;
+  int camera_matrix_rows_, camera_matrix_cols_;
   std::vector<double> dist_coeffs_data_;
+  int dist_coeffs_rows_, dist_coeffs_cols_;
   std::vector<double> rectification_matrix_data_;
+  int rectification_matrix_rows_, rectification_matrix_cols_;
   std::vector<double> projection_matrix_data_;
+  int projection_matrix_rows_, projection_matrix_cols_;
 
   cv::Mat camera_matrix_;
   cv::Mat dist_coeffs_;
