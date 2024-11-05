@@ -24,12 +24,17 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
-    image_topic = DeclareLaunchArgument(
-        'image_topic',
+    left_image_topic = DeclareLaunchArgument(
+        'left_image_topic',
         default_value='/insta360air/left/camera/image_raw',
         description='Image topic to subscribe to'
     )
     
+    right_image_topic = DeclareLaunchArgument(
+        'right_image_topic',
+        default_value='/insta360air/right/camera/image_raw',
+        description='Image topic to subscribe to'
+    )
     camera_info_dir = os.path.join(
         get_package_share_directory('dual_fisheye_camera'),
         'config',
@@ -38,14 +43,24 @@ def generate_launch_description():
 
     
     launch_nodes = [
-        image_topic,
+        left_image_topic,
         Node(
             package='dual_fisheye_camera',
             executable='image_undistort_node',
-            name='image_undistort_node',  
+            name='image_undistort_node_left',  
             output='screen',
-            parameters=[camera_info_dir, {'image_topic': LaunchConfiguration('image_topic')}]
-        ),
+            parameters=[camera_info_dir, {'image_topic': LaunchConfiguration('left_image_topic')}]
+        )
     ]
+    launch_nodes.append(right_image_topic)
+    launch_nodes.append(
+        Node(
+            package='dual_fisheye_camera',
+            executable='image_undistort_node',
+            name='image_undistort_node_right',  
+            output='screen',
+            parameters=[camera_info_dir, {'image_topic': LaunchConfiguration('right_image_topic')}]
+        )
+    )
     
     return LaunchDescription(launch_nodes)
