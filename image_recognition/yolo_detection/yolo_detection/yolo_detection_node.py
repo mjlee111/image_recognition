@@ -23,7 +23,7 @@ import torch
 import os
 import cv2
 import random
-from image_recognition_msgs.msg import BoundingBoxMsgs
+from image_recognition_msgs.msg import BoundingBoxMsgs, CoordinateMsgs
 import sys
 
 os.environ['YOLO_VERBOSE'] = 'False'
@@ -152,7 +152,7 @@ class YoloDetectorNode(Node):
 
             class_idx = int(cls)
             class_name = self.classes[class_idx] if self.classes and class_idx < len(self.classes) else str(class_idx)
-            bounding_box_msg.class_name = class_name
+            bounding_box_msg.class_id = class_idx
 
             self.bounding_box_publisher.publish(bounding_box_msg)
             self.get_logger().info(f'Published bounding box: {bounding_box_msg}')
@@ -162,6 +162,7 @@ class YoloDetectorNode(Node):
             cv2.rectangle(cv_image, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), color, 2)
             label = f"{class_name}"
             cv2.putText(cv_image, label, (int(bbox[0]), int(bbox[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
 
         try:
             img_msg_with_boxes = self.bridge.cv2_to_imgmsg(cv_image, encoding="bgr8")
