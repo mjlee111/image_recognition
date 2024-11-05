@@ -56,18 +56,27 @@ This package contains custom message definitions for `image_recognition` package
 | tilt_range | int32[2] | Min and max tilt values [min, max] |
 | steps | int32[2] | Step values for pan and tilt [pan_step, tilt_step] |
 
+### CoordinateMsgs.msg
+
+| Name | Data Type | Description |
+|------|-----------|-------------|
+| xy | int32[2] | Array of 2 values [x, y] |
+
 ### BoundingBoxMsgs.msg
 
 | Name | Data Type | Description |
 |------|-----------|-------------|
+| header | std_msgs/Header | Standard ROS 2 message header |
+| class_id | int32 | ID of the detected class |
 | box | float64[4] | Array of 4 values [xmin, ymin, xmax, ymax] |
-| class_name | string | Name of the detected class |
 
 ### SegmentationMsgs.msg
 
 | Name | Data Type | Description |
 |------|-----------|-------------|
-| class_name | string | Name of the segmented class |
+| header | std_msgs/Header | Standard ROS 2 message header |
+| class_id | int32 | ID of the segmented class |
+| mask | uint8[,] | Mask of the segmented class |
 
 
 ## Usage
